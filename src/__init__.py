@@ -19,19 +19,24 @@ def create_app():
 
     with app.app_context():
         # Import routes
-        from .routes import auth, posts
+        from .routes import auth, posts, code
 
         # Import errors
         from .routes import FailedRequest
-        from werkzeug.exceptions import NotFound, InternalServerError, BadRequest
+        from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, MethodNotAllowed
 
         # Register blueprints
         app.register_blueprint(auth.b)
         app.register_blueprint(posts.b)
+        app.register_blueprint(code.b)
 
         # Handle errors
         @app.errorhandler(404)
         def not_found_eh(e: NotFound):
+            return make_response(jsonify(message=e.description, success=False, data={}), e.code)
+
+        @app.errorhandler(405)
+        def not_found_eh(e: MethodNotAllowed):
             return make_response(jsonify(message=e.description, success=False, data={}), e.code)
 
         @app.errorhandler(400)
