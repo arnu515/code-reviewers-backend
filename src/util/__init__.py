@@ -5,8 +5,11 @@ import random
 
 from .. import jwt
 
-rd = StrictRedis(host=env("REDIS_HOST", "localhost"), port=int(env("REDIS_PORT", "6379")), db=int(env("REDIS_DB", "0")),
-                 password=env("REDIS_PASS", ""), decode_responses=True)
+if env("REDIS_URL") is not None:
+    rd = StrictRedis.from_url(env("REDIS_URL", "redis://:@localhost:6379/0"), decode_responses=True)
+else:
+    rd = StrictRedis(host=env("REDIS_HOST", "localhost"), port=int(env("REDIS_PORT", "6379")), db=int(env("REDIS_DB", "0")),
+                     password=env("REDIS_PASS", ""), decode_responses=True)
 
 
 @jwt.token_in_blacklist_loader
