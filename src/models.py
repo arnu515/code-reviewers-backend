@@ -17,6 +17,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     posts = db.relationship("Post", backref="user")
+    code = db.relationship("Code", backref="user")
     
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -58,6 +59,7 @@ class Post(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    code = db.relationship("Code", backref="post")
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -70,4 +72,33 @@ class Post(db.Model):
 
     def dict(self):
         return dict(id=self.id, title=self.title, description=self.description, public=self.public,
-                    suggestions=self.suggestions, created_at=self.created_at, updated_at=self.updated_at)
+                    user=self.user.dict(), suggestions=self.suggestions, created_at=self.created_at,
+                    updated_at=self.updated_at)
+
+
+class Code(db.Model):
+    __tablename__ = "code"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    language = db.Column(db.String(128), default="plaintext")
+    path = db.Column(db.String(1024))
+    # If the code file was hosted locally or not
+    local = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    def save(self):
+        self.updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def dict(self):
+        d = dict(id=self.id, local=self.local, path=self.path, language=self.language, created_at=self.created_at,
+                 updated_at=self.updated_at, user=self.user.dict())
+        return d
