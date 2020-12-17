@@ -89,6 +89,7 @@ class Code(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -101,5 +102,5 @@ class Code(db.Model):
 
     def dict(self):
         d = dict(id=self.id, local=self.local, path=self.path, language=self.language, created_at=self.created_at,
-                 updated_at=self.updated_at, user=self.user.dict())
+                 filename=self.filename, updated_at=self.updated_at, user=self.user.dict())
         return d
