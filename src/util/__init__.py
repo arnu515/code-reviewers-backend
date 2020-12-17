@@ -1,5 +1,7 @@
 from redis import StrictRedis
 from os import getenv as env
+import string
+import random
 
 from .. import jwt
 
@@ -18,3 +20,11 @@ def revoke_token(jti: str):
 
 def store_token(jti: str):
     rd.set(jti, 'false', int(86400 * 1.2))
+
+
+def generate_string(length: int = 16, has_digits: bool = True):
+    charset = string.ascii_letters
+    if has_digits:
+        charset += string.digits
+
+    return "".join([random.choice(charset) for _ in range(length)])
