@@ -80,6 +80,7 @@ class Code(db.Model):
     __tablename__ = "code"
     
     id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(64))
     language = db.Column(db.String(128), default="plaintext")
     path = db.Column(db.String(1024))
     # If the code file was hosted locally or not
