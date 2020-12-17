@@ -33,7 +33,7 @@ def get_from_request(item: Union[str, List[str]], required: Union[bool, List[boo
         return [get_from_request(item[i], required[i]) for i in range(len(item))]
     else:
         item_from_request = request.json.get(item, None)
-        if (not item_from_request) and required:
+        if (item_from_request is None) and required:
             raise FailedRequest(f"Property \"{item}\" missing in request body")
 
         return item_from_request
