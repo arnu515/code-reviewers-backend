@@ -5,6 +5,8 @@ from .util import security
 
 
 class User(db.Model):
+    __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(2048))
     password = db.Column(db.String(2048))
@@ -13,6 +15,8 @@ class User(db.Model):
     role = db.Column(db.String(64), default="member")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    posts = db.relationship("Post", backref="user")
     
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -40,3 +44,30 @@ class User(db.Model):
         u = User(email=email, password=security.enc_pwd(password), username=username)
         u.save()
         return u
+
+
+class Post(db.Model):
+    __tablename__ = "posts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(2048))
+    description = db.Column(db.Text)
+    public = db.Column(db.Boolean, default=True)
+    suggestions = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    def save(self):
+        self.updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def dict(self):
+        return dict(id=self.id, title=self.title, description=self.description, public=self.public,
+                    suggestions=self.suggestions, created_at=self.created_at, updated_at=self.updated_at)
