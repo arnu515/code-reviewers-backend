@@ -92,3 +92,14 @@ def change_post_suggestions(id_: int):
     p.suggestions = bool(sug)
     p.save()
     return good_response("Suggestions " + ("enabled" if sug else "disabled"), {"post": p.dict()})
+
+
+@b.route("/<int:id_>", methods=["DELETE"])
+@jwt_required
+def delete_post(id_):
+    p: Post = Post.query.get_or_404(id_, "Post not found")
+    u: User = User.query.get(get_jwt_identity()["id"])
+    if p.user_id != u.id:
+        raise FailedRequest("You're not the author", {}, 403)
+    p.delete()
+    return good_response("Post deleted", {"post": p.dict()})
