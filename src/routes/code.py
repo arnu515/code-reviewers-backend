@@ -23,7 +23,7 @@ def add_code():
     u: User = User.query.get(get_jwt_identity()["id"])
     lang, code = get_from_request(["language", "code"], True)
     filename: str = get_from_request("filename", False) or generate_string()
-    if Code.query.filter_by(filename=filename).first():
+    if Code.query.filter_by(filename=filename, user_id=u.id).first():
         raise FailedRequest(f"File with name {filename} already exists!")
 
     path, local = files.create_encrypted_file(filename, code)
