@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from . import db
-from .util import security
+from .util import security, files
 
 
 class User(db.Model):
@@ -73,7 +73,7 @@ class Post(db.Model):
     def dict(self):
         return dict(id=self.id, title=self.title, description=self.description, public=self.public,
                     user=self.user.dict(), suggestions=self.suggestions, created_at=self.created_at,
-                    updated_at=self.updated_at)
+                    updated_at=self.updated_at, code=[c.dict() for c in self.code])
 
 
 class Code(db.Model):
@@ -99,6 +99,9 @@ class Code(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def get_content(self):
+        return files.get_encrypted_file_contents(self.filename, local=self.local)
 
     def dict(self):
         d = dict(id=self.id, local=self.local, path=self.path, language=self.language, created_at=self.created_at,
