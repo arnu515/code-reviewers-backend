@@ -1,7 +1,7 @@
 from os import getenv as env, path
 from typing import Tuple, Optional
 
-from . import security
+from . import security, spaces
 
 
 def create_encrypted_file(filename: str, content: str, folder: str = "code") -> Tuple[str, bool]:
@@ -21,7 +21,9 @@ def create_encrypted_file(filename: str, content: str, folder: str = "code") -> 
             f.write(security.enc(content).encode())
         return pathname, True
     else:
-        pass
+        pathname = path.join(folder, filename)
+        spaces.upload_file_from_string(security.enc(content), pathname)
+        return pathname, False
 
 
 def get_encrypted_file_contents(filename: str, folder: str = "code", local: bool = True) -> Optional[str]:
@@ -35,4 +37,9 @@ def get_encrypted_file_contents(filename: str, folder: str = "code", local: bool
         except FileNotFoundError:
             return None
     else:
-        pass
+        pathname = path.join(folder, filename)
+        try:
+            return security.dec(spaces.get_file_contents(pathname).decode())
+        except Exception as e:
+            print(e)
+            return None
