@@ -1,11 +1,20 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from typing import List
 
 from . import good_response, FailedRequest, get_from_request
 from ..models import User, Code
 from ..util import generate_string, files
 
 b = Blueprint("code", __name__, url_prefix="/api/code")
+
+
+@b.route("")
+@jwt_required
+def get_code_by_user():
+    u: User = User.query.get(get_jwt_identity()["id"])
+    c: List[Code] = Code.query.filter_by(user_id=u.id).order_by(Code.created_at.desc()).all()
+    return good_response("Code found", {"code": [i.dict() for i in c]})
 
 
 @b.route("", methods=["POST"])
