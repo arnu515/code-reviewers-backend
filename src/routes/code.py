@@ -46,6 +46,10 @@ def add_code_from_file():
 
     if not request.files or not request.files.get("file"):
         raise FailedRequest("Please attach a script file with UTF-8 encoding")
+
+    if Code.query.filter_by(filename=filename).first():
+        raise FailedRequest(f"File with name {filename} already exists")
+
     try:
         code = request.files["file"].stream.read().decode()
     except UnicodeDecodeError:
