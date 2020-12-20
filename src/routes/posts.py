@@ -3,7 +3,7 @@ from flask_sqlalchemy import Pagination
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import good_response, FailedRequest, get_from_request
-from ..models import Post, User
+from ..models import Post, User, Code
 
 b = Blueprint("posts", __name__, url_prefix="/api/posts")
 
@@ -103,3 +103,38 @@ def delete_post(id_):
         raise FailedRequest("You're not the author", {}, 403)
     p.delete()
     return good_response("Post deleted", {"post": p.dict()})
+
+
+@b.route("/<int:id_>/add/code", methods=["PUT"])
+@jwt_required
+def add_code_in_post(id_: int):
+    p: Post = Post.query.get_or_404(id_, "Post not found")
+    u: User = User.query.get(get_jwt_identity()["id"])
+    if p.user_id != u.id:
+        raise FailedRequest("You're not the author", {}, 403)
+    code_ids = get_from_request("code", True)
+    for i in code_ids:
+        c: Code = Code.query.get(i)
+        if not c:
+            raise FailedRequest(f"Code with id {i} does not exist")
+        p.code.append(c)
+        p.save()
+
+
+@b.route("/<int:id_>/delete/code", methods=["PUT"])
+@jwt_required
+def remove_code_from_post(id_: int):
+    p: Post = Post.query.get_or_404(id_, "Post not found")
+    u: User = User.query.get(get_jwt_identity()["id"])
+    if p.user_id != u.id:
+        raise FailedRequest("You're not the author", {}, 403)
+    code_ids = get_from_request("code", True)
+    for i in code_ids:
+        c: Code = Code.query.get(i)
+        if not c:
+            raise FailedRequest(f"Code with id {i} does not exist")
+        try:
+            p.code.remove(c)
+            p.save()
+        except ValueError:
+            raise FailedRequest(f"Code with filename {c.filename} is not there in the post")
