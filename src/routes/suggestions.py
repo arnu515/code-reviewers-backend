@@ -15,6 +15,7 @@ def get_suggestions_of_post(post_id: int):
 
 
 @b.route("/<int:post_id>", methods=["POST"])
+@jwt_required
 def add_suggestion_to_post(post_id: int):
     p: Post = Post.query.get_or_404(post_id, "Post not found")
     u: User = User.query.get(get_jwt_identity()["id"])
@@ -23,7 +24,7 @@ def add_suggestion_to_post(post_id: int):
     if not c:
         raise FailedRequest("Code with id " + c.id + " was not found")
     s = Suggestion(title=title, content=content)
-    s.code = c
+    s.code_id = c.id
     s.user_id = u.id
     s.post_id = p.id
     s.save()
