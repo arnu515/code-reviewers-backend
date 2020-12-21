@@ -91,7 +91,6 @@ class Code(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
-    review_id = db.Column(db.Integer, db.ForeignKey("reviews.id"))
 
     def save(self):
         self.updated_at = datetime.utcnow()
