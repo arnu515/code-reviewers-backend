@@ -17,6 +17,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     posts = db.relationship("Post", backref="user")
+    reviews = db.relationship("Review", backref="user")
     code = db.relationship("Code", backref="user")
     
     def save(self):
@@ -134,4 +135,4 @@ class Review(db.Model):
 
     def dict(self):
         return dict(id=self.id, title=self.title, content=self.content, stars=self.stars,
-                    created_at=self.created_at, updated_at=self.updated_at)
+                    user=self.user.dict(), created_at=self.created_at, updated_at=self.updated_at)
