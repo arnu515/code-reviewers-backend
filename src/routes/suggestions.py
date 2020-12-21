@@ -10,6 +10,8 @@ b = Blueprint("suggestions", __name__, url_prefix="/api/suggestions")
 @b.route("/<int:post_id>")
 def get_suggestions_of_post(post_id: int):
     p: Post = Post.query.get_or_404(post_id, "Post not found")
+    if not p.suggestions_enabled:
+        return good_response("Suggestions are not enabled", {"suggestions": None})
     suggestions = Suggestion.query.filter_by(post_id=p.id).order_by(Suggestion.created_at.desc()).all()
     return good_response("Suggestions found", {"suggestions": [s.dict() for s in suggestions]})
 
@@ -18,6 +20,8 @@ def get_suggestions_of_post(post_id: int):
 @jwt_required
 def add_suggestion_to_post(post_id: int):
     p: Post = Post.query.get_or_404(post_id, "Post not found")
+    if not p.suggestions_enabled:
+        raise FailedRequest("Suggestions are not enabled for this post!")
     u: User = User.query.get(get_jwt_identity()["id"])
     title, content, code_id = get_from_request(["title", "content", "code"], True)
     c: Code = Code.query.get(code_id)
