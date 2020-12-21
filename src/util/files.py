@@ -17,7 +17,7 @@ def create_encrypted_file(filename: str, content: str, folder: str = "code",
     or not
     """
     filename = filename + ".encrypted"
-    if env("FLASK_ENV", "") == "development":
+    if env("FLASK_ENV", "development") == "development":
         pathname = path.join(path.abspath(path.dirname(__file__)), "..", "static", folder, filename)
         with open(pathname, "wb") as f:
             f.write(security.enc(content).encode())
