@@ -18,8 +18,9 @@ class User(db.Model):
 
     posts = db.relationship("Post", backref="user")
     reviews = db.relationship("Review", backref="user")
+    suggestions = db.relationship("Suggestion", backref="user")
     code = db.relationship("Code", backref="user")
-    
+
     def save(self):
         self.updated_at = datetime.utcnow()
         db.session.add(self)
@@ -93,7 +94,7 @@ class Code(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
-    suggestion_id = db.Column(db.Integer, db.ForeignKey("suggestions.id"))
+    suggestions = db.relationship("Suggestion", backref="code")
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -151,7 +152,7 @@ class Suggestion(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
-    code = db.relationship("Code", uselist=False, backref="suggestion")
+    code_id = db.Column(db.Integer, db.ForeignKey("code.id"))
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -161,3 +162,8 @@ class Suggestion(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def dict(self):
+        return dict(id=self.id, title=self.title, content=self.content,
+                    created_at=self.created_at, updated_at=self.updated_at,
+                    code=self.code.dict(), user=self.user.dict())
