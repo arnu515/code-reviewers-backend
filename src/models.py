@@ -60,6 +60,7 @@ class Post(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     code = db.relationship("Code", backref="post")
+    reviews = db.relationship("Review", backref="post")
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -90,6 +91,7 @@ class Code(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
+    review_id = db.Column(db.Integer, db.ForeignKey("reviews.id"))
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -107,3 +109,30 @@ class Code(db.Model):
         d = dict(id=self.id, local=self.local, path=self.path, language=self.language, created_at=self.created_at,
                  filename=self.filename, updated_at=self.updated_at, user=self.user.dict())
         return d
+
+
+class Review(db.Model):
+    __tablename__ = "reviews"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128))
+    content = db.Column(db.Text)
+    stars = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
+
+    def save(self):
+        self.updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def dict(self):
+        return dict(id=self.id, title=self.title, content=self.content, stars=self.stars,
+                    created_at=self.created_at, updated_at=self.updated_at)
