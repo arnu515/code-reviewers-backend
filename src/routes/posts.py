@@ -119,6 +119,7 @@ def add_code_in_post(id_: int):
             raise FailedRequest(f"Code with id {i} does not exist")
         p.code.append(c)
         p.save()
+    return good_response("Code added", {"post": p.dict()})
 
 
 @b.route("/<int:id_>/delete/code", methods=["PUT"])
@@ -138,3 +139,4 @@ def remove_code_from_post(id_: int):
             p.save()
         except ValueError:
             raise FailedRequest(f"Code with filename {c.filename} is not there in the post")
+    return good_response("Code removed", {"post": p.dict()})
