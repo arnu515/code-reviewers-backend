@@ -41,6 +41,10 @@ class User(db.Model):
     
     def check_password(self, password: str):
         return security.check_pwd(password, self.password)
+
+    def set_password(self, password: str):
+        self.password = security.enc_pwd(password)
+        self.save()
     
     @staticmethod
     def new(email: str, password: str, username: str):
@@ -76,7 +80,7 @@ class Post(db.Model):
 
     def dict(self):
         return dict(id=self.id, title=self.title, description=self.description, public=self.public,
-                    user=self.user.dict(), suggestions=self.suggestions_enabled, created_at=self.created_at,
+                    user=self.user.dict(), suggestions_enabled=self.suggestions_enabled, created_at=self.created_at,
                     updated_at=self.updated_at, code=[c.dict() for c in self.code])
 
 
