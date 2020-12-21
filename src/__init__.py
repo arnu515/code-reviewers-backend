@@ -19,7 +19,7 @@ def create_app():
 
     with app.app_context():
         # Import routes
-        from .routes import auth, posts, code, reviews, suggestions
+        from .routes import auth, posts, code, reviews, suggestions, users
 
         # Import errors
         from .routes import FailedRequest
@@ -31,6 +31,8 @@ def create_app():
         app.register_blueprint(code.b)
         app.register_blueprint(reviews.b)
         app.register_blueprint(suggestions.b)
+        app.register_blueprint(users.b)
+        app.register_blueprint(users.b2)
 
         # Handle errors
         @app.errorhandler(404)
