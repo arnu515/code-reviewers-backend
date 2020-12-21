@@ -37,7 +37,7 @@ def create_post():
     title = title.strip()
     desc = desc.strip()
     priv, sug = get_from_request(["private", "suggestions"], False)
-    p = Post(title=title, description=desc, public=not priv, suggestions=bool(sug))
+    p = Post(title=title, description=desc, public=not priv, suggestions_enabled=bool(sug))
     p.user_id = u.id
     p.save()
 
