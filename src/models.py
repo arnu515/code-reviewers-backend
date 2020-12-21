@@ -55,13 +55,14 @@ class Post(db.Model):
     title = db.Column(db.String(2048))
     description = db.Column(db.Text)
     public = db.Column(db.Boolean, default=True)
-    suggestions = db.Column(db.Boolean, default=True)
+    suggestions_enabled = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     code = db.relationship("Code", backref="post")
     reviews = db.relationship("Review", backref="post")
+    suggestions = db.relationship("Suggestion", backref="post")
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -74,7 +75,7 @@ class Post(db.Model):
 
     def dict(self):
         return dict(id=self.id, title=self.title, description=self.description, public=self.public,
-                    user=self.user.dict(), suggestions=self.suggestions, created_at=self.created_at,
+                    user=self.user.dict(), suggestions=self.suggestions_enabled, created_at=self.created_at,
                     updated_at=self.updated_at, code=[c.dict() for c in self.code])
 
 
@@ -92,6 +93,7 @@ class Code(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
+    suggestion_id = db.Column(db.Integer, db.ForeignKey("suggestions.id"))
 
     def save(self):
         self.updated_at = datetime.utcnow()
@@ -136,3 +138,26 @@ class Review(db.Model):
     def dict(self):
         return dict(id=self.id, title=self.title, content=self.content, stars=self.stars,
                     user=self.user.dict(), created_at=self.created_at, updated_at=self.updated_at)
+
+
+class Suggestion(db.Model):
+    __tablename__ = "suggestions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128))
+    content = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"))
+    code = db.relationship("Code", uselist=False, backref="suggestion")
+
+    def save(self):
+        self.updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()

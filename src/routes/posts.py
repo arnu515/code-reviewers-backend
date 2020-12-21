@@ -89,7 +89,7 @@ def change_post_suggestions(id_: int):
     if p.user_id != u.id:
         raise FailedRequest("You're not the author", {}, 403)
     sug = get_from_request("suggestions", True)
-    p.suggestions = bool(sug)
+    p.suggestions_enabled = bool(sug)
     p.save()
     return good_response("Suggestions " + ("enabled" if sug else "disabled"), {"post": p.dict()})
 
