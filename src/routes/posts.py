@@ -33,11 +33,12 @@ def get_post_by_id(pid: int):
 def create_post():
     id_ = get_jwt_identity()
     u: User = User.query.get(id_)
-    title, desc = get_from_request(["title", "description"], True)
+    title = get_from_request("title", True)
+    desc = get_from_request("desc", False) or ""
     title = title.strip()
     desc = desc.strip()
-    priv, sug = get_from_request(["private", "suggestions"], False)
-    p = Post(title=title, description=desc, public=not priv, suggestions_enabled=bool(sug))
+    private, sug = get_from_request(["private", "suggestions"], False)
+    p = Post(title=title, description=desc, public=not private, suggestions_enabled=bool(sug))
     p.user_id = u.id
     p.save()
 
