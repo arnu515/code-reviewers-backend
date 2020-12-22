@@ -23,6 +23,8 @@ def add_code():
     u: User = User.query.get(get_jwt_identity()["id"])
     lang, code = get_from_request(["language", "code"], True)
     filename: str = get_from_request("filename", False) or generate_string()
+    lang = lang.lower().strip()
+    filename = filename.strip()
     if Code.query.filter_by(filename=filename, user_id=u.id).first():
         raise FailedRequest(f"File with name {filename} already exists!")
 
@@ -40,6 +42,8 @@ def add_code_from_file():
     u: User = User.query.get(get_jwt_identity()["id"])
     lang = request.form.get("language")
     filename = request.form.get("filename", generate_string())
+    lang = lang.lower().strip()
+    filename = filename.strip()
 
     if not lang or not filename:
         raise FailedRequest("Fill out all fields!")
@@ -79,13 +83,15 @@ def update_code(id_: int):
         raise FailedRequest("You're not the owner", {}, 403)
 
     lang, code, filename = get_from_request(["language", "code", "filename"], True)
+    lang = lang.lower().strip()
+    filename = filename.strip()
 
     path, local = files.create_encrypted_file(filename, code)
 
     c.filename = filename
     c.path = path
     c.local = local
-    c.lang = lang
+    c.language = lang
     c.save()
 
     return good_response("Code updated", {"code": c.dict(), "content": code})
