@@ -22,6 +22,14 @@ def get_public_posts():
     return good_response("Posts found", {"posts": [i.dict() for i in p.items]})
 
 
+@b.route("/private")
+@jwt_required
+def get_private_posts():
+    u: User = User.query.get(get_jwt_identity()["id"])
+    p = Post.query.order_by(Post.created_at.desc()).filter_by(public=False, user_id=u.id)
+    return good_response("Posts found", {"posts": [i.dict() for i in p]})
+
+
 @b.route("/<int:pid>")
 def get_post_by_id(pid: int):
     p: Post = Post.query.get_or_404(pid, "Post not found")
