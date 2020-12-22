@@ -32,6 +32,7 @@ class User(db.Model):
         
     def dict(self):
         return dict(
+            id=self.id,
             email=self.email,
             username=self.username,
             role=self.role,
