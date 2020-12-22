@@ -89,3 +89,13 @@ def update_code(id_: int):
     c.save()
 
     return good_response("Code updated", {"code": c.dict(), "content": code})
+
+
+@b.route("/<int:id_>/author")
+@jwt_required
+def check_if_code_author(id_: int):
+    u: User = User.query.get(get_jwt_identity()["id"])
+    c: Code = Code.query.get_or_404(id_, "Code not found")
+    if c.user_id != u.id:
+        raise FailedRequest("You're not the owner", {}, 403)
+    return good_response("You're the owner", {"code": c.dict()})
