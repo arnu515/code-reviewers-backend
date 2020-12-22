@@ -18,7 +18,7 @@ def get_user_from_username(username: str):
 
 @b.route("/<string:username>/posts")
 def get_users_posts(username: str):
-    u: User = User.query.filter_by(username=username).first_or_404("User not found")
+    u: User = User.query.filter_by(username=username, public=True).first_or_404("User not found")
     return good_response("Posts found", {"user": u.dict(), "posts": [p.dict() for p in Post.query
                          .filter_by(user_id=u.id).order_by(Post.created_at.desc()).all()]})
 
