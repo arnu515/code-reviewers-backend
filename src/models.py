@@ -111,7 +111,7 @@ class Code(db.Model):
         db.session.commit()
 
     def get_content(self):
-        return files.get_encrypted_file_contents(self.filename, local=self.local)
+        return files.get_encrypted_file_contents(self.filename, local=self.local, username=self.user.username)
 
     def dict(self):
         d = dict(id=self.id, local=self.local, path=self.path, language=self.language, created_at=self.created_at,

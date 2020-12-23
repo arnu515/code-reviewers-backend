@@ -71,7 +71,8 @@ def add_code_from_file():
 def get_code_by_id(id_: int):
     c: Code = Code.query.get_or_404(id_, "Code not found")
     return good_response("Code found",
-                         {"code": c.dict(), "content": files.get_encrypted_file_contents(c.filename, local=c.local)})
+                         {"code": c.dict(), "content": files.get_encrypted_file_contents(c.filename, local=c.local,
+                                                                                         username=c.user.username)})
 
 
 @b.route("/<int:id_>", methods=["PUT"])
