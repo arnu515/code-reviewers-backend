@@ -23,9 +23,9 @@ spec:
           http_port: 5000
 
     databases:
-        - name: redis
-          engine: REDIS
-          version: "6"
         - name: postgres
           engine: PG
           version: "12"
+        - name: redis
+          engine: REDIS
+          version: "6"
