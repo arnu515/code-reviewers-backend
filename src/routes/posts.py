@@ -42,7 +42,7 @@ def create_post():
     id_ = get_jwt_identity()
     u: User = User.query.get(id_)
     title = get_from_request("title", True)
-    desc = get_from_request("desc", False) or ""
+    desc = get_from_request("description", False) or ""
     title = title.strip()
     desc = desc.strip()
     private, sug = get_from_request(["private", "suggestions"], False)
