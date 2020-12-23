@@ -28,3 +28,4 @@ spec:
           version: "6"
         - name: postgres
           engine: PG
+          version: "12"
