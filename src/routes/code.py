@@ -28,7 +28,7 @@ def add_code():
     if Code.query.filter_by(filename=filename, user_id=u.id).first():
         raise FailedRequest(f"File with name {filename} already exists!")
 
-    path, local = files.create_encrypted_file(filename, code)
+    path, local = files.create_encrypted_file(filename, code, username=u.username)
     c = Code(language=lang, filename=filename, path=path, local=local)
     c.user_id = u.id
     c.save()
@@ -59,7 +59,7 @@ def add_code_from_file():
     except UnicodeDecodeError:
         raise FailedRequest("Please attach a script file with UTF-8 encoding")
 
-    path, local = files.create_encrypted_file(filename, code)
+    path, local = files.create_encrypted_file(filename, code, username=u.username)
     c = Code(language=lang, filename=filename, path=path, local=local)
     c.user_id = u.id
     c.save()
@@ -86,7 +86,7 @@ def update_code(id_: int):
     lang = lang.lower().strip()
     filename = filename.strip()
 
-    path, local = files.create_encrypted_file(filename, code)
+    path, local = files.create_encrypted_file(filename, code, username=u.username)
 
     c.filename = filename
     c.path = path
