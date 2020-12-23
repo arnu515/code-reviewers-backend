@@ -14,4 +14,6 @@ COPY . .
 
 EXPOSE 5000
 
+ENV FLASK_ENV production
+
 CMD [ "pipenv", "run", "gunicorn", "app:app", "-b", "0.0.0.0:5000" ]
