@@ -5,3 +5,4 @@
 db.db
 **/__pycache__
 src/static/code/*
+.docker-compose*
